@@ -108,13 +108,7 @@ namespace KaoQinApp
             fs.Close();
             return listRecords;
         }
-
-        public static void CheckIfValid(List<Record> listRecords)
-        {
-
-            
-        }
-
+        
         bool isLateOrEarlyOffWork(DateTime dt)
         {
             //判断当前时间是否在工作时间段内
@@ -360,6 +354,139 @@ namespace KaoQinApp
             {
                 MessageBox.Show(""+ex);
             }
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".xlsx";
+            dlg.Filter = "Text documents (.xlsx)|*.xlsx";
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                string filename = dlg.FileName;
+                FileNameTextBox2.Text = filename;
+
+                string newDatFileName = System.IO.Path.GetFileNameWithoutExtension(filename);
+
+                try
+                {
+                    var listExcelItems = ReadExcel(filename);
+
+                    SaveCSV(listExcelItems,"D:\\"+newDatFileName+".dat");
+
+                    MessageBox.Show("OK,file at "+ "D:\\" + newDatFileName + ".dat");
+                }
+                catch (Exception e2)
+                {
+                    MessageBox.Show("" + e2.Message);
+                }
+            }
+        }
+        public List<ExcelItem> ReadExcel(string filePath, string sheetName = null)
+        {
+
+            List<ExcelItem> listExcelItems = new List<ExcelItem>();
+
+            try
+            {
+                ISheet sheet = null;
+                DataTable data = new DataTable();
+                int startRow = 0;
+                IWorkbook workbook = null;
+                bool isFirstRowColumn = true;
+
+
+                var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                if (filePath.IndexOf(".xlsx") > 0) // 2007版本
+                    workbook = new XSSFWorkbook(fs);
+                else if (filePath.IndexOf(".xls") > 0) // 2003版本
+                    workbook = new HSSFWorkbook(fs);
+
+                if (sheetName != null)
+                {
+                    sheet = workbook.GetSheet(sheetName);
+                    if (sheet == null) //如果没有找到指定的sheetName对应的sheet，则尝试获取第一个sheet
+                    {
+                        sheet = workbook.GetSheetAt(0);
+                    }
+                }
+                else
+                {
+                    sheet = workbook.GetSheetAt(0);
+                }
+                
+
+                if (sheet != null)
+                {
+                    IRow firstRow = sheet.GetRow(0);
+                    int cellCount = firstRow.LastCellNum; //一行最后一个cell的编号 即总的列数
+
+                    for(int i = 1/*跳过第一行*/; i <= sheet.LastRowNum; i++)
+                    {
+                        IRow row = sheet.GetRow(i);
+                        if (row == null) continue; //没有数据的行默认是null
+                        //var name=row.GetCell(0).ToString();
+                        var bianhao = row.GetCell(1).ToString();
+                        var recordTime = row.GetCell(2).ToString();
+                        if (string.IsNullOrEmpty(recordTime))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            var date = DateTime.Parse(recordTime);
+                            recordTime = date.ToString("yyyy-MM-dd HH:mm:ss");
+                        }
+
+
+                        var excelItem = new ExcelItem();
+                        excelItem.Bianhao = bianhao;
+                        excelItem.RecordDate = recordTime;
+                        listExcelItems.Add(excelItem);
+                    }
+                    
+                }//end if (sheet != null)
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("" + ex);
+            }
+
+            return listExcelItems;
+
+            // MessageBox.Show("Done OK,file at D:\\");
+        }
+
+        public static void SaveCSV(List<ExcelItem> listExcelItems, string fullPath)//table数据写入csv  
+        {
+            System.IO.FileInfo fi = new System.IO.FileInfo(fullPath);
+            if (!fi.Directory.Exists)
+            {
+                fi.Directory.Create();
+            }
+            System.IO.FileStream fs = new System.IO.FileStream(fullPath, System.IO.FileMode.Create,
+                System.IO.FileAccess.Write);
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.UTF8);
+            
+            for (int i = 0; i < listExcelItems.Count; i++) //写入各行数据  
+            {   
+                var excelItem = listExcelItems[i];
+                var data = "  " + excelItem.Bianhao + "\t" + excelItem.RecordDate + "\t1\t0\t1\t0";
+                sw.WriteLine(data);
+            }
+
+            sw.Close();
+            fs.Close();
         }
 
     }

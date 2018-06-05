@@ -5,11 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:KaoQinApp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="200" Width="500">
     <Grid>
-        <TextBox Height="32" HorizontalAlignment="Left" Margin="6,10,0,0" Name="FileNameTextBox" 
-                 VerticalAlignment="Top" Width="393" />
-        <Button Content="Browse" HorizontalAlignment="Left" Margin="405,10,0,378" 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80*"></ColumnDefinition>
+            <ColumnDefinition Width="20*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Label  Grid.Row="0" Grid.ColumnSpan="2">Dat文件生成excel文件</Label>
+        <TextBox  Grid.Row="1" Grid.Column="0" Height="32" HorizontalAlignment="Left" Margin="6,6,6,6" Name="FileNameTextBox" 
+                 VerticalAlignment="Top" Width="360" />
+        <Button  Grid.Row="1" Grid.Column="1" Height="40" Content="Browse" 
                 Name="button1" Width="88" Click="button1_Click" />
+
+        <GridSplitter Grid.Row="2" Height="5" ></GridSplitter>
+        
+        <Label  Grid.Row="3" Grid.ColumnSpan="2">excel生成Dat文件</Label>
+        <TextBox  Grid.Row="4" Grid.Column="0" Height="32" HorizontalAlignment="Left" Margin="6,6,6,6" Name="FileNameTextBox2" 
+                 Width="360" />
+        <Button  Grid.Row="4" Grid.Column="1"  Height="40" Content="Browse" 
+                Name="button2" Width="88"  Click="button2_Click" />
     </Grid>
 </Window>
