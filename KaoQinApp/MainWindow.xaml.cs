@@ -1,5 +1,6 @@
 ﻿using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -136,7 +137,7 @@ namespace KaoQinApp
             try
             {
                 //创建一个工作簿
-                IWorkbook workbook = new HSSFWorkbook();
+                IWorkbook workbook = new XSSFWorkbook();
 
                 //创建一个 sheet 表
                 ISheet sheet = workbook.CreateSheet(tableName);
@@ -320,7 +321,7 @@ namespace KaoQinApp
                 string path = "D:\\"+tableName+"-智能部件苏州分部";
 
                 //设置新建文件路径及名称
-                string savePath = path + ".xls";
+                string savePath = path + ".xlsx";
 
                 //创建文件
                 FileStream file = new FileStream(savePath, FileMode.CreateNew, System.IO.FileAccess.Write);
