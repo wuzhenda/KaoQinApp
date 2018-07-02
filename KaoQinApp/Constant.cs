@@ -9,7 +9,7 @@ namespace KaoQinApp
     public class Constant
     {
         public static Dictionary<string, string> NameDictionary = new Dictionary<string, string>{
-
+                     //{编号,姓名 },
         };
 
         public static Dictionary<int, string> MonthDictionary = new Dictionary<int, string>{

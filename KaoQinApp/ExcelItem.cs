@@ -10,7 +10,8 @@ namespace KaoQinApp
     {
         public string Name { get; set; }
         public string Bianhao { get; set; }
-        public string RecordDate { get; set; }
+        //public string RecordDate { get; set; }
+        public DateTime RecordDate { get; set; }
         public string Note { get; set; }
     }
 }

@@ -151,6 +151,11 @@ namespace KaoQinApp
                 //设置为文本格式，也可以为 text，即 dataFormat.GetFormat("text");
                 cellStyle.DataFormat = dataFormat.GetFormat("@");
 
+
+                ICellStyle cellDateStyle = workbook.CreateCellStyle();
+                IDataFormat dateFormat = workbook.CreateDataFormat();
+                cellDateStyle.DataFormat = dateFormat.GetFormat("yyyy-mm-dd hh:mm:ss;@");
+                
                 //设置列名
                 //foreach (DataColumn col in dt.Columns)
                 //{
@@ -176,7 +181,7 @@ namespace KaoQinApp
 
                     rowH.CreateCell(start+2).SetCellValue("刷卡记录");
                     //设置单元格格式
-                    rowH.Cells[start+2].CellStyle = cellStyle;
+                    rowH.Cells[start+2].CellStyle = cellDateStyle;
 
                     rowH.CreateCell(start+3).SetCellValue("备注");
                     //设置单元格格式
@@ -199,7 +204,9 @@ namespace KaoQinApp
                     var excelItem = new ExcelItem();
                     excelItem.Bianhao = record.Bianhao;
                     excelItem.Name = Constant.NameDictionary[record.Bianhao];
-                    excelItem.RecordDate = record.OnDate.ToString();
+                    //excelItem.RecordDate = record.OnDate.ToString();
+                    excelItem.RecordDate = record.OnDate;
+
                     if (isLateOrEarlyOffWork(record.OnDate))
                     {
                         excelItem.Note = "迟到或早退";
@@ -234,7 +241,7 @@ namespace KaoQinApp
                         }
 
                         //隔天,插入空记录
-                        ExcelItem tmp = new ExcelItem();
+                        ExcelItem tmp = new ExcelItem();                        
                         listExcelItems.Add(tmp);
 
                         //更新天
@@ -298,8 +305,21 @@ namespace KaoQinApp
                         cell.SetCellValue(excelItem.Name);
                         cell = row.CreateCell(j+1);
                         cell.SetCellValue(excelItem.Bianhao);
-                        cell = row.CreateCell(j+2);
-                        cell.SetCellValue(excelItem.RecordDate);
+
+                        if (default(DateTime)==excelItem.RecordDate)
+                        {
+                            cell = row.CreateCell(j + 2);
+                            string dt = null;
+                            cell.SetCellValue(dt);
+                            cell.CellStyle = cellStyle;
+                        }
+                        else
+                        {
+                            cell = row.CreateCell(j + 2, CellType.Numeric);
+                            cell.SetCellValue(excelItem.RecordDate);
+                            cell.CellStyle = cellDateStyle;                            
+                        }
+
                         cell = row.CreateCell(j+3);
                         cell.SetCellValue(excelItem.Note);
                         if (string.IsNullOrEmpty(excelItem.Note))
@@ -434,23 +454,34 @@ namespace KaoQinApp
                     {
                         IRow row = sheet.GetRow(i);
                         if (row == null) continue; //没有数据的行默认是null
-                        //var name=row.GetCell(0).ToString();
-                        var bianhao = row.GetCell(1).ToString();
-                        var recordTime = row.GetCell(2).ToString();
-                        if (string.IsNullOrEmpty(recordTime))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            var date = DateTime.Parse(recordTime);
-                            recordTime = date.ToString("yyyy-MM-dd HH:mm:ss");
-                        }
+
+                        var bianhaoCell = row.GetCell(1);
+                        if (null == bianhaoCell) continue;
+                        var bianhao = bianhaoCell.ToString();
+                        if (string.IsNullOrEmpty(bianhao)) continue;
+
+                        var recordTimeCell = row.GetCell(2);
+                        if (null == recordTimeCell) continue;
+
+                        if (default(DateTime) == recordTimeCell.DateCellValue) continue;
+                        var recordTime = recordTimeCell.DateCellValue;//.ToString();
+                        //var cc = new DateTime();
+                        //if (string.IsNullOrEmpty(recordTime))
+                        //{
+                        //    continue;
+                        //}
+                        //else
+                        //{
+                        //    var date = DateTime.Parse(recordTime);
+                        //    recordTime = date.ToString("yyyy-MM-dd HH:mm:ss");
+                        //    cc = date;
+                        //}
 
 
                         var excelItem = new ExcelItem();
                         excelItem.Bianhao = bianhao;
                         excelItem.RecordDate = recordTime;
+                        //excelItem.RecordDate = cc;
                         listExcelItems.Add(excelItem);
                     }
                     
@@ -481,7 +512,7 @@ namespace KaoQinApp
             for (int i = 0; i < listExcelItems.Count; i++) //写入各行数据  
             {   
                 var excelItem = listExcelItems[i];
-                var data = "  " + excelItem.Bianhao + "\t" + excelItem.RecordDate + "\t1\t0\t1\t0";
+                var data = "  " + excelItem.Bianhao + "\t" + excelItem.RecordDate.ToString("yyyy-MM-dd HH:mm:ss") + "\t1\t0\t1\t0";
                 sw.WriteLine(data);
             }
 
