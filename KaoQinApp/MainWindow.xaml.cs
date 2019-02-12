@@ -190,13 +190,20 @@ namespace KaoQinApp
 
                 //{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
                 int lastDay = -1;
-                var OndayDic = new Dictionary<string, int>{
-                                        {"1003920",0 },
-                                        {"1004984",0 },
-                                        {"1004699",0 },
-                                        {"1006056",0 },
-                                        {"1006177",0 },
-                                    };
+                //var OndayDic = new Dictionary<string, int>{
+                //                        {"1003920",0 },
+                //                        {"1004984",0 },
+                //                        {"1004699",0 },
+                //                        {"1006056",0 }
+                //                    };
+                //avoid hard code
+                var OndayDic = new Dictionary<string, int>();
+                //init state
+                foreach(var userBianhao in Constant.NameDictionary.Keys){
+                    OndayDic.Add(userBianhao, 0);
+                }
+
+
                 List<ExcelItem> listExcelItems = new List<ExcelItem>();
                 for (int i = 0; i < listRecords.Count; i++)
                 {

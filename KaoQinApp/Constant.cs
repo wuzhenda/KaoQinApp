@@ -3,14 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace KaoQinApp
 {
     public class Constant
     {
-        public static Dictionary<string, string> NameDictionary = new Dictionary<string, string>{
-                     //{编号,姓名 },
-        };
+        public static Dictionary<string, string> NameDictionary
+        {
+            get
+            {
+                var dd = new Dictionary<string, string>();
+                var source = ConfigurationManager.AppSettings;
+
+                return source.Cast<string>().ToDictionary(s => s, s => source[s]);
+            }
+        }
+        
 
         public static Dictionary<int, string> MonthDictionary = new Dictionary<int, string>{
             {1,"一" },

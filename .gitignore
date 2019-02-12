@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pycinternal_info.txt
 internal_info.txt
+KaoQinApp/App.config
