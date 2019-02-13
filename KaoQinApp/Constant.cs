@@ -13,9 +13,9 @@ namespace KaoQinApp
         {
             get
             {
-                var dd = new Dictionary<string, string>();
                 var source = ConfigurationManager.AppSettings;
-
+                //cast to name array(string)
+                //var tmp = source.Cast<string>();
                 return source.Cast<string>().ToDictionary(s => s, s => source[s]);
             }
         }
